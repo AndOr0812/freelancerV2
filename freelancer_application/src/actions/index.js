@@ -15,6 +15,8 @@ export const GET_PROFILE_DETAILS = 'get_profile_details';
 
 export const POST_PROJECT = 'post_project';
 
+export const ALL_OPEN_PROJECTS = 'all_open_projects';
+
 const ROOT_URL = 'http://localhost:3001';
 
 const api = process.env.REACT_APP_CONTACTS_API_URL || 'http://localhost:3001';
@@ -179,6 +181,30 @@ export function authenticateUser(values,callback) {
         )};
 }
 
+//Action creator to fetch the list of all open projects
+
+export function getAllProjects(callback) {
+    console.log("Inside the getAll Projects action creator");
+
+    const request = axios.get(`${ROOT_URL}/projects/all`,{withCredentials:true});
+
+    return (dispatch) => {
+        request.then(
+            ({data}) => {
+                console.log("Inside the get all open projects dispatcher function");
+                console.log(data);
+                callback(data);
+                if (data) {
+                    //getUserProfile(data.user.emailid);
+                    console.log(`User returned is ${data}`)
+                    dispatch({
+                        type: ALL_OPEN_PROJECTS,
+                        payload: data.projects
+                    });
+                }
+            }
+        )};
+}
 
 
 //Action Creator for the Login Page
