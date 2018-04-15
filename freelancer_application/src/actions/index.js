@@ -17,6 +17,8 @@ export const POST_PROJECT = 'post_project';
 
 export const ALL_OPEN_PROJECTS = 'all_open_projects';
 
+export const RELEVANT_PROJECTS = 'relevant_projects';
+
 const ROOT_URL = 'http://localhost:3001';
 
 const api = process.env.REACT_APP_CONTACTS_API_URL || 'http://localhost:3001';
@@ -199,6 +201,41 @@ export function getAllProjects(callback) {
                     console.log(`User returned is ${data}`)
                     dispatch({
                         type: ALL_OPEN_PROJECTS,
+                        payload: data.projects
+                    });
+                }
+            }
+        )};
+}
+
+export function getRelevantProjects(values,callback) {
+    console.log("Inside the get relevant Projects action creator");
+    console.log(values);
+    console.log(typeof values);
+    var final_value="";
+    if(!values || values === undefined || values === null){
+        final_value="";
+        return;
+    }else {
+        console.log("before final_value data is");
+        final_value = values.substr(values.indexOf("[") + 1, values.lastIndexOf("]") -1);
+        console.log("after final_value data is");
+        console.log(final_value);
+        console.log(typeof final_value);
+    }
+    const request = axios.get(`${ROOT_URL}/projects/relevant/${final_value}`,{withCredentials:true});
+
+    return (dispatch) => {
+        request.then(
+            ({data}) => {
+                console.log("Inside the get all open projects dispatcher function");
+                console.log(data);
+                callback(data);
+                if (data) {
+                    //getUserProfile(data.user.emailid);
+                    console.log(`User returned is ${data}`)
+                    dispatch({
+                        type: RELEVANT_PROJECTS,
                         payload: data.projects
                     });
                 }

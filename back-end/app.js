@@ -144,6 +144,29 @@ app.post('/users/profile/update',function (req,res) {
     });
 });
 
+//Route to fetch all Relevant Open Projects
+
+app.get('/projects/relevant/:user_skills',function (req,res) {
+    console.log(`Inside the relevant projects router ${req.params.user_skills}`);
+    return res.status(201).send("success");
+    /*kafka.make_request('getProjects',{data:{proj_status:'open'}},function (err,results) {
+        if (err){
+            console.log(err);
+            res.status(500).send("Error in kafka connectivity");
+            return;
+        }else {
+            if(results.code == 200){
+                return res.status(201).send(results);
+            }
+            else {
+                return res.status(401).send("error");
+            }
+        }
+    })*/
+});
+
+//End of All open projects fetch
+
 
 //Route to fetch all Open Projects
 
