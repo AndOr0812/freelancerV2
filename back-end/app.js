@@ -9,7 +9,7 @@ require('./routes/passport')(passport);
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var mongoSessionURL = "mongodb://localhost:27017/sessions";
+var mongoSessionURL = "mongodb://localhost:54000/sessions";
 var expressSessions = require("express-session");
 var mongoStore = require("connect-mongo/es5")(expressSessions);
 var kafka = require('./routes/kafka/client');
@@ -94,11 +94,15 @@ app.post('/signup', function (req,res) {
 
 app.get('/profile/getdetails/:emailId',function(req,res){
     console.log("Inside the get profile router");
-    var emailId = req.params.emailId;
-    //if(!emailId) return;
+    var emailId = req.params.emailId || null;
+    console.log(`emailId is ${emailId}`);
+    if(emailId === 'undefined' || !emailId) {
+        console.log("If email id is not passed then i wont make a kafka request");
+        return res.status(401).send("error");
+    }else {
     console.log(`The email ID for which the profile needs to be fetched is`);
     console.log(emailId);
-    kafka.make_request('profile', {"data":{
+    kafka.make_request('profile', {data:{
         "emailid": emailId}
     }, function(err,results){
         console.log('In Kafka: %o', results);
@@ -108,13 +112,14 @@ app.get('/profile/getdetails/:emailId',function(req,res){
         else
         {
             if(results.code == 200){
-                return res.status(201).send(data.user);
+                return res.status(201).send(results);
             }
             else {
                 return res.status(401).send("error");
             }
         }
     });
+    }
 });
 
 app.post('/logout', function(req,res) {

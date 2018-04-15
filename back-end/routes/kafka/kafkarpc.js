@@ -1,7 +1,7 @@
 var crypto = require('crypto');
 var conn = require('./Connection');
 
-var TIMEOUT=8000; //time to wait for response in ms
+var TIMEOUT=88000; //time to wait for response in ms
 var self;
 
 exports = module.exports =  KafkaRPC;
@@ -19,7 +19,7 @@ function KafkaRPC(){
 KafkaRPC.prototype.makeRequest = function(topic_name, content, callback){
     console.log(`Kafkarpc-Content: ${JSON.stringify(content)}`);
     console.log('kafka_make_request with topic_name:' + topic_name);
-    var response_topic_name = topic_name +'_response';
+    //var response_topic_name = topic_name +'_response';
     self = this;
 
     //generate a unique correlation id for this call
@@ -43,15 +43,15 @@ KafkaRPC.prototype.makeRequest = function(topic_name, content, callback){
 
     //put the entry in the hash so we can match the response later
     self.requests[correlationId]=entry;
-
+/*
     //create response topic
-    self.producer.createTopics([response_topic_name], false, function (err, data) {
+    self.producer.createTopics(['login_topic_response','profile_response','profile_update_response'], false, function (err, data) {
         if(err) {
             console.log(err);
         } else {
             console.log('Response Topic created: ' + data);
         }
-    });
+    });*/
 
     //make sure we have a response topic
     self.setupResponseQueue(self.producer, topic_name, function(){
@@ -62,7 +62,8 @@ KafkaRPC.prototype.makeRequest = function(topic_name, content, callback){
         var payloads = [
             { topic: topic_name, messages: JSON.stringify({
                     correlationId:correlationId,
-                    replyTo: response_topic_name,
+                    topic: topic_name,
+                    replyTo: 'response_topic',
                     data:content}),
                 partition:0}
         ];
@@ -83,14 +84,14 @@ KafkaRPC.prototype.makeRequest = function(topic_name, content, callback){
 
 
 KafkaRPC.prototype.setupResponseQueue = function(producer,topic_name, next){
-    var response_topic_name = topic_name+'_response';
+    /*var response_topic_name = topic_name+'_response';*/
     //don't mess around if we have a queue
     if(this.response_queue) return next();
 
     self = this;
 
     //subscribe to messages
-    var consumer = self.connection.getConsumer(response_topic_name);
+    var consumer = self.connection.getConsumer(/*response_topic_name*/'response_topic');
     consumer.on('message', function (message) {
         console.log('Response msg received on node');
         var data = JSON.parse(message.value);

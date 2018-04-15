@@ -4,6 +4,13 @@ function handle_request(msg,collection, callback){
     var res = {};
     console.log("In handle request:"+ JSON.stringify(msg));
 
+    if(msg.emailid === undefined || msg.password === undefined){
+        res.code = 401;
+        res.value = "Required fields missing";
+        callback(null, res);
+        return;
+    }
+
     collection.findOne({
         _id: msg.emailid,
         password: msg.password

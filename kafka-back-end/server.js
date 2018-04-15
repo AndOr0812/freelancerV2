@@ -10,7 +10,7 @@ var producer = connection.getProducer();
 
 // Add MongoDB connections
 const MongoClient = require('mongodb').MongoClient;
-var mongoURL = 'mongodb://localhost:27017/Freelancer';
+var mongoURL = 'mongodb://localhost:54000/freelancer';
 
 var collection;
 
@@ -29,7 +29,7 @@ consumer.on('message', function (message) {
     console.log('message received');
     console.log(JSON.stringify(message.value));
     var data = JSON.parse(message.value);
-    login.handle_request(data.data, function(err,res){
+    login.handle_request(data.data,collection, function(err,res){
         console.log('after handle'+res);
         var payloads = [
             { topic: data.replyTo,
@@ -45,7 +45,20 @@ consumer.on('message', function (message) {
         });
         return;
     });
-});*/
+});
+*/
+
+
+
+// Add additional topics
+consumer.addTopics([{topic:'profile'/*, offset: 0*/},
+    {topic:'profile_update'/*, offset: 0*/},
+    {topic:'anyRequest'/*, offset: 0*/}], function (err, added) {
+    if(err) {
+        console.log(`AddTopics Error: ${err}`);
+    } else if(added){
+        console.log(`Topics added: ${added}`);
+    }});
 
 //To Handle the Kafka Consumer error
 consumer.on('error', function (err) {
@@ -60,47 +73,52 @@ consumer.on('offsetOutOfRange', function (err) {
 //When message is received from the kafka topic
 consumer.on('message',  (message) => {
     console.log('Received message on Topic ');
-    console.log(`data: ${message.value}`)
+    console.log(`data: ${message.value}`);
     var data = JSON.parse(message.value);
+    console.log(`data.data is ${data.data}`);
     let handler;
     console.log(data.replyTo);
-    switch(data.replyTo.slice(0, -9)) {
-        case 'login_topic':
-            if(data.data.action === 'login'){
-                handler = login;
-            } else if(data.data.action === 'signup') {
-                handler = signup;
-            } else {
-                handler = persistedLogin;
-            }
-            break;
-        case 'profile':
-            handler = getProfile;
-            break;
-    }
-
-    handler.handle_request(data.data, collection, function(err,res){
-        console.log('after handle: %o',res);
-        var payloads = [
-            {
-                topic: data.replyTo,
-                messages:JSON.stringify({
-                    correlationId: data.correlationId,
-                    data : res
-                }),
-                partition : 0
-            }
-        ];
-        producer.send(payloads, function(err, data){
-            if(err){
-                console.log(err);
-            } else {
-                console.log('Data sent by Producer: ');
-                console.log(data);
-            }
-        });
+    console.log(`The message received in this topic ${data.topic}`);
+    if(!data.topic) {
         return;
-    });
+    } else {
+        /*switch(data.replyTo.slice(0, -9)) {*/
+        switch (data.topic) {
+            case 'login_topic':
+                if (data.data.action === 'login') {
+                    handler = login;
+                } else if (data.data.action === 'signup') {
+                    handler = signup;
+                }
+                break;
+            case 'profile':
+                handler = getProfile;
+                break;
+        }
+
+        handler.handle_request(data.data, collection, function (err, res) {
+            console.log('after handle: %o', res);
+            var payloads = [
+                {
+                    topic: data.replyTo,
+                    messages: JSON.stringify({
+                        correlationId: data.correlationId,
+                        data: res
+                    }),
+                    partition: 0
+                }
+            ];
+            producer.send(payloads, function (err, data) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log('Data sent by Producer: ');
+                    console.log(data);
+                }
+            });
+            return;
+        });
+    }
 });
 
 console.log('server is running');

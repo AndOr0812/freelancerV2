@@ -43,6 +43,10 @@ export function getImages() {
 
 export function getUserProfile(emailId,callback) {
     console.log(`The emailId for which the profile should be fetched is ${emailId}`);
+    if(!emailId){
+        console.log("Inside the emailid is undefined");
+        emailId = 'undefined';
+    }
     const request = axios.get(`${ROOT_URL}/profile/getdetails/${emailId}`,{withCredentials: true});
 
     return (dispatch) => {
