@@ -19,7 +19,7 @@ const Headers = () => {
                     </Link>
                     <div  className="dropdown-menu">
                         <h6>FIND A FREELANCER</h6>
-                        <Link to="#" className="dropdown-item">Post a Project</Link>
+                        <Link to="/post_project" className="dropdown-item">Post a Project</Link>
                         <Link to="#" className="dropdown-item">Post a Content</Link>
                         <Link to="#" className="dropdown-item">Post a Local Job</Link>
                         <div className="dropdown-divider"></div>

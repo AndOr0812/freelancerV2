@@ -13,6 +13,7 @@ import Login from './containers/login';
 import LogOut from './containers/logout';
 import reducers from './reducers';
 import Profile from "./components/profile";
+import Home from "./containers/home";
 import EditProfile from './containers/editprofile';
 import PostProject from "./containers/postproject";
 
@@ -31,6 +32,7 @@ ReactDOM.render(
               <Route path="/logout" component={LogOut}/>
               <Route path="/signup" component={SignUp}/>
               <Route path="/login" component={Login}/>
+              <Route path="/home" component={Home}/>
               <Route path="/" component={App}/>
           </Switch>
       </BrowserRouter>

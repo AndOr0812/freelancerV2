@@ -183,20 +183,26 @@ export function authenticateUser(values,callback) {
 
 //Action Creator for the Login Page
 export function postProject(values,callback) {
-    console.log('inside authenticate user action creator');
+    console.log('inside post Project action creator');
     console.log(JSON.stringify(values));
+    console.log(`values.proj_name is ${values.proj_name}`);
     let body = new FormData();
+    body.set('proj_name',values.proj_name);
+    body.set('proj_desc',values.proj_desc);
+    body.set('proj_budget',values.proj_budget);
+    body.set('proj_skills',values.proj_skills);
+    //body.set('files',values.files);
     /*body.append('')*/
-    Object.keys(values).forEach(( key ) => {
-        if (key === 'files')
+   /* Object.keys(values).forEach(( key ) => {
+        /!*if (key === 'files')*!/
             console.log("values[key] is ");
             console.log(values[key]);
-        body.append(key, values[ key ]);
-    });
+        body.set(key, values[ key ]);
+    });*/
 
-    for (let pair of body.entries()) {
+/*    for (let pair of body.entries()) {
         console.log(pair[0]+ ', ' + pair[1]);
-    }
+    }*/
 
     console.log("The body after mapping is");
     console.info(body);
@@ -206,10 +212,11 @@ export function postProject(values,callback) {
     const request =fetch(`${ROOT_URL}/projects/new`, {
         method:'POST',
         body: body,
-/*        headers: {
-            'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
-            'Content-Type': 'multipart/form-data'
-        },*/
+        credentials:'include',
+        headers: {
+            'Accept': 'application/json, application/xml, text/plain, text/html, *.*'/*,
+            'Content-Type': 'multipart/form-data'*/
+        },
     });
     //const payload_response_data;
 /*    const request = axios({
@@ -227,16 +234,20 @@ export function postProject(values,callback) {
 
     return (dispatch) => {
         request.then(
-            (/*{data}*/) => {
+            (res) => {
                 console.log("Inside the post project dispatcher function");
-                /*console.log(data);
-                callback(data);
-                if (data.success) {
-                    dispatch({
-                        type: POST_PROJECT,
-                        payload: data
+                console.log(res);
+                if(res.ok){
+                    res.json().then( json_data => {
+                        callback(json_data);
+                        if (json_data.code === 200) {
+                            dispatch({
+                                type: POST_PROJECT,
+                                payload: json_data.user.ops[0]
+                            });
+                        }
                     });
-                }*/
+                }
             }
         )};
 }

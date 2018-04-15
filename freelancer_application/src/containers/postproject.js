@@ -106,6 +106,14 @@ class PostProject extends Component {
         this.props.postProject(values, result => {
             console.log("Return from the callback");
             console.log(result);
+            let err_msg ="";
+            if (result.code === 200){
+                this.props.history.push('/');
+                return;
+            } else {
+                err_msg = "Error while posting a new project";
+            }
+            document.getElementById("message").innerHTML = err_msg;
         });
 
      /*   axios({
@@ -144,7 +152,7 @@ class PostProject extends Component {
                         <div className="row mt-4">
                 <form id="postproject" className="row" onSubmit={handleSubmit(this.onSubmit.bind(this))} encType="multipart/form-data">
                     <div className="col-sm-12">
-                        <h6 class="font-weight-bold">Choose a name for your project</h6>
+                        <h6 className="font-weight-bold">Choose a name for your project</h6>
                     <Field
                         hint = 'e.g. Build me a website'
                         type = 'text'
@@ -153,10 +161,10 @@ class PostProject extends Component {
                     />
                     </div>
                     <div className="col-sm-12 mt-4">
-                        <h6 class="font-weight-bold">Tell us more about your project</h6>
+                        <h6 className="font-weight-bold">Tell us more about your project</h6>
                         <p className="font-weight-light mt-2">Great project descriptions include a little bit about yourself, details of what you are trying to achieve, and any decisions that you have already made about your project. If there are things you are unsure of, don't worry, a freelancer will be able to help you fill in the blanks.</p>
                             <Field
-                                name="aboutme"
+                                name="proj_desc"
                                 component={this.renderTextArea}>
                             </Field>
                     </div>
@@ -170,7 +178,7 @@ class PostProject extends Component {
                     </div>
 
                     <div className="col-sm-12 mt-4">
-                        <h6 class="font-weight-bold">What is your estimated budget?</h6>
+                        <h6 className="font-weight-bold">What is your estimated budget?</h6>
                         <Field
                             hint = 'Estimated Project Budget'
                             type = 'text'
@@ -212,13 +220,15 @@ function validate(values) {
     const errors = {};
     console.log(JSON.stringify(values.files));
 
+    console.log(`values.files values is ${values.files}`);
+
     if (!values.proj_name){
         errors.proj_name = 'Please Enter a project name.'
     }
     if (!values.proj_desc){
         errors.proj_desc = 'Please Enter the project description.'
     }
-    console.log(`project skills data is ${values.proj_skills}`)
+    console.log(`project skills data is ${values.proj_skills}`);
     if(!values.proj_skills){
         console.log("Inside the project skills if clause");
         errors.proj_skills = 'Please select at lease one skills'

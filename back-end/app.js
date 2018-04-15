@@ -144,6 +144,43 @@ app.post('/users/profile/update',function (req,res) {
     });
 });
 
+
+//Route to handle the post project functionality
+
+var storage1 = multer.diskStorage({
+    destination: 'public/uploads/'
+});
+var upload1 = multer({
+    storage: storage1
+});
+
+app.post('/projects/new',upload1.array('files'), function(req, res) {
+    console.log("Inside the projects new router");
+    console.log(req.body);
+    console.log(req.files);
+    var proj_msg = /*{
+        proj_desc: req.body.proj_desc,
+        proj_budget: req.body.proj_budget,​
+        proj_name: req.body.proj_name,​
+        proj_skills: req.body.proj_skills}*/req.body;
+    kafka.make_request('postProject',{data:proj_msg}, function(err,results){
+        console.log('In Kafka: %o', results);
+        if(err){
+            console.log(err);
+        }
+        else
+        {
+            if(results.code == 200){
+                return res.status(201).send(results);
+            }
+            else {
+                return res.status(401).send("error");
+            }
+        }
+    });
+});
+
+
 //ROute to handle the getUserProfile details
 app.get('/profile/getdetails/:emailId',function(req,res){
     console.log("Inside the get profile router");

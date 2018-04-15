@@ -3,6 +3,7 @@ var login = require('./services/login');
 var signup = require('./services/signup');
 var getProfile = require('./services/getProfile');
 var updateProfile = require('./services/updateProfile');
+var postProject = require('./services/postProject');
 var topic_name = 'login_topic';
 var consumer = connection.getConsumer(topic_name);
 var producer = connection.getProducer();
@@ -13,14 +14,15 @@ var producer = connection.getProducer();
 const MongoClient = require('mongodb').MongoClient;
 var mongoURL = 'mongodb://localhost:54000/freelancer';
 
-var collection;
+var collection,freelancerCollection,postProjectCollection;
 
 MongoClient.connect(mongoURL, function (err, db) {
     if(err) {
         console.log("Unable to connect to MongoDB");
     } else {
         console.log("Connected to MongoDB");
-        collection = db.collection('freelancer');
+        freelancerCollection = db.collection('freelancer');
+        postProjectCollection = db.collection('project');
     }
 });
 
@@ -54,6 +56,7 @@ consumer.on('message', function (message) {
 // Add additional topics
 consumer.addTopics([{topic:'profile'/*, offset: 0*/},
     {topic:'profile_update'/*, offset: 0*/},
+    {topic:'postProject'/*, offset: 0*/},
     {topic:'anyRequest'/*, offset: 0*/}], function (err, added) {
     if(err) {
         console.log(`AddTopics Error: ${err}`);
@@ -88,15 +91,24 @@ consumer.on('message',  (message) => {
             case 'login_topic':
                 if (data.data.action === 'login') {
                     handler = login;
+                    collection = freelancerCollection;
                 } else if (data.data.action === 'signup') {
                     handler = signup;
+                    collection = freelancerCollection;
                 }
                 break;
             case 'profile':
                 handler = getProfile;
+                collection = freelancerCollection;
                 break;
             case 'profile_update':
                 handler = updateProfile;
+                collection = freelancerCollection;
+                break;
+            case 'postProject':
+                handler = postProject;
+                collection = postProjectCollection;
+                break;
         }
 
         handler.handle_request(data.data, collection, function (err, res) {
