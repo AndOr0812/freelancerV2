@@ -103,7 +103,17 @@ class PostProject extends Component {
     }
 
     onSubmit(values){
-        this.props.postProject(values, result => {
+        console.info('values with out modification',values);
+        let employerName = this.props.current_user.name;
+        let employerId = this.props.current_user.emailid;
+        let proj_status = 'open';
+        let new_values = {...values,
+            employerId:employerId,
+            employerName: employerName,
+            proj_status: proj_status
+        };
+        console.info('newValues',new_values)
+        this.props.postProject(new_values, result => {
             console.log("Return from the callback");
             console.log(result);
             let err_msg ="";

@@ -191,6 +191,9 @@ export function postProject(values,callback) {
     body.set('proj_desc',values.proj_desc);
     body.set('proj_budget',values.proj_budget);
     body.set('proj_skills',values.proj_skills);
+    body.set('proj_status',values.proj_status);
+    body.set('employerId',values.employerId);
+    body.set('employerName',values.employerName);
     //body.set('files',values.files);
     /*body.append('')*/
    /* Object.keys(values).forEach(( key ) => {
