@@ -27,13 +27,15 @@ class Profile extends Component{
             console.log(JSON.stringify(res.user));
         });
         }
-    }/*
+    }
+/*
     componentWillReceiveProps(nextProps){
         console.log(`Current User Next Props Value is ${nextProps.current_profile_details}`);
-        if (this.props.current_user !== this.props.current_profile_details){
+        if (this.props.current_profile_details !== nextProps.current_profile_details){
             this.props.history.push('/profile');
         }
-    }*/
+    }
+*/
 
     conditionalRendering(handleSubmit) {
         console.log('inside profile page');

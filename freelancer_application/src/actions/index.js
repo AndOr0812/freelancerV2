@@ -55,7 +55,7 @@ export function getUserProfile(emailId,callback) {
                 console.log("Inside the getUserProfile dispatcher function");
                 console.log(data);
                 callback(data);
-                if (!data.user) {
+                if (data.user) {
                     //callback(data.user_profile);
                     dispatch({
                         type: GET_PROFILE_DETAILS,
@@ -78,10 +78,10 @@ export function profileUpdate(values,callback) {
                 console.log("Inside the profile update dispatcher function");
                 console.log(data);
                 callback(data);
-                if (data.success) {
+                if (data.code === 200) {
                     dispatch({
                         type: USER_PROFILE_UPDATE,
-                        payload: data
+                        payload: data.user
                     });
                 }
             }

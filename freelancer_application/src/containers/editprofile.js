@@ -18,10 +18,7 @@ class EditUserProfile extends Component{
         if (JSON.stringify(this.props.current_user) === "{}"){
             this.props.history.push('/login');
         }
-/*
-        this.props.getUserProfile(this.props.current_user.emailId);
-*/
-        }
+    }
 
     renderMultiselect({ input, ...rest }){
         return (<div><Multiselect {...input}
@@ -81,14 +78,14 @@ class EditUserProfile extends Component{
             else {
                 console.log("Inside the callback function, Uploded File name is");
                 console.log(filename);
-                FILE_PATH='http://localhost:5000/uploads/'+filename;
+                FILE_PATH='http://localhost:3001/uploads/'+filename;
             }
         });
     };
 
     onSubmit(values){
         values.emailId = this.props.current_user.emailid;
-        console.log("After including the current user emailid")
+        console.log("After including the current user emailid");
         console.log(JSON.stringify(values));
         if(FILE_PATH !== this.props.current_profile_details.imgPath){
             values.imgPath = FILE_PATH;
@@ -101,10 +98,14 @@ class EditUserProfile extends Component{
         this.props.profileUpdate(values,(result_user)=>{
             console.log('return from the callback');
             console.log(result_user);
-            if (result_user.error === 'Invalid Email Id and password'){
-                let err_msg = "Invalid Email ID and/or Password";
-                document.getElementById("message").innerHTML = err_msg;
+            if (result_user.code === 200){
+                this.props.history.push('/profile');
+                return;
+                /*let err_msg = result_user.value;
+                document.getElementById("message").innerHTML = err_msg;*/
             }
+            let err_msg = result_user.value;
+            document.getElementById("message").innerHTML = err_msg;
         });
     }
 
@@ -161,7 +162,7 @@ class EditUserProfile extends Component{
                                     <Field
                                         name="aboutme"
                                         component={this.renderTextArea}>
-                                        {current_profile_details.aboutme}</Field>
+                                        {initialValues.aboutme}</Field>
                                 </div>
                                 {/*<input className='form-control' style={{height: 150+'px'}} type="text" value={this.props.current_profile_details.aboutme}/>*/}
                             </div>
@@ -228,7 +229,7 @@ const mapStateToProps=(state)=>{
         images: state.images,
         initialValues: {
             phone: state.profileDetails.phone,
-            name: state.userProfile.name,
+            name: (state.userProfile.name) ? state.userProfile.name : 'Akhil Bhavirisetty',
             imgPath: state.profileDetails.imgPath,
             skills: (state.profileDetails.skills) ? state.profileDetails.skills: [],
             aboutme: state.profileDetails.aboutme

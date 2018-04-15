@@ -7,6 +7,11 @@ var passport = require('passport');
 var cors = require('cors');
 require('./routes/passport')(passport);
 
+
+var multer = require('multer');
+var glob = require('glob');
+
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var mongoSessionURL = "mongodb://localhost:54000/sessions";
@@ -40,6 +45,11 @@ app.use(function(req, res, next) {
 });
 
 app.use(cors(corsOptions));
+
+
+//Any routes with /uploads will be handled by this for handling static files
+app.use('/uploads/', express.static(path.join('./', 'public','uploads')));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -64,18 +74,60 @@ app.use(expressSessions({
 app.use(passport.initialize());
 
 app.use('/', routes);
-app.use('/users', users);
+//app.use('/users', users);
 
-app.post('/signup', function (req,res) {
-    var name = req.body.name;
-    var emailid = req.body.emailid;
-    var password = req.body.password;
-    kafka.make_request('login_topic', {
-            "action": 'signup',
-            "name":name,
-            "emailid": emailid,
-            "password":password
-        }, function(err,results){
+//For Handling the Image Upload
+
+var temp_file = "";
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/uploads/')
+    },
+    filename: function (req, file, cb) {
+        temp_file = file.fieldname + '-' + Date.now() + '.jpeg';
+        console.log('file name is');
+        console.log(temp_file);
+        cb(null, temp_file/*file.fieldname + '-' + Date.now() + '.jpeg'*/)
+    }
+});
+var upload = multer({storage:storage});
+
+app.post('/files/upload',upload.single('mypic'),function (req,res) {
+    console.log(req.body);
+    console.log(req.file);
+    console.log('file name is');
+    console.log(temp_file);
+    res.status(200).send({
+        success:true,
+        filename:temp_file
+    });
+});
+//End of handling the File Upload
+
+//For Handling the Edit profile  Route
+app.post('/users/profile/update',function (req,res) {
+    console.log(JSON.stringify(req.body));
+    const emailId = req.body.emailId || null;
+    const phone = req.body.phone  || null;
+    const imgPath = req.body.imgPath  || null;
+    const aboutme = req.body.aboutme  || null;
+    const skills = JSON.stringify(req.body.user_skills)  || null;
+    console.log("After destructuring");
+    console.log('Inside the profile update router');
+
+    if(!emailId){
+        console.log("Inside the profile update If emailId passed check");
+        res.status(401).send("Email Id is not passed");
+        return;
+    }
+    kafka.make_request('profile_update',{data:{
+            emailId:emailId,
+            phone: phone,
+            imgPath: imgPath,
+            aboutme: aboutme,
+            skills:skills
+        }},function(err,results){
         console.log('In Kafka: %o', results);
         if(err){
             console.log(err);
@@ -83,7 +135,7 @@ app.post('/signup', function (req,res) {
         else
         {
             if(results.code == 200){
-                return res.status(201).send({name:name,emailid:emailid});
+                return res.status(201).send(results);
             }
             else {
                 return res.status(401).send("error");
@@ -92,6 +144,7 @@ app.post('/signup', function (req,res) {
     });
 });
 
+//ROute to handle the getUserProfile details
 app.get('/profile/getdetails/:emailId',function(req,res){
     console.log("Inside the get profile router");
     var emailId = req.params.emailId || null;
@@ -122,6 +175,8 @@ app.get('/profile/getdetails/:emailId',function(req,res){
     }
 });
 
+
+//Route to handle the logout
 app.post('/logout', function(req,res) {
     console.log(req.session.user);
     req.session.cookie.expires = new Date();
@@ -131,6 +186,8 @@ app.post('/logout', function(req,res) {
     res.status(200).send();
 });
 
+
+//Route to handle the login
 app.post('/login', function(req, res) {
     console.log(`received login request is ${req.body}`)
     passport.authenticate('login', function(err, user) {
@@ -150,5 +207,35 @@ app.post('/login', function(req, res) {
         return res.status(201).send({name:user.name, emailid: user._id});
     })(req, res);
 });
+
+
+
+//Handling the signUp route
+app.post('/signup', function (req,res) {
+    var name = req.body.name;
+    var emailid = req.body.emailid;
+    var password = req.body.password;
+    kafka.make_request('login_topic', {
+        "action": 'signup',
+        "name":name,
+        "emailid": emailid,
+        "password":password
+    }, function(err,results){
+        console.log('In Kafka: %o', results);
+        if(err){
+            console.log(err);
+        }
+        else
+        {
+            if(results.code == 200){
+                return res.status(201).send({name:name,emailid:emailid});
+            }
+            else {
+                return res.status(401).send("error");
+            }
+        }
+    });
+});
+
 
 module.exports = app;

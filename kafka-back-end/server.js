@@ -2,6 +2,7 @@ var connection =  new require('./kafka/Connection');
 var login = require('./services/login');
 var signup = require('./services/signup');
 var getProfile = require('./services/getProfile');
+var updateProfile = require('./services/updateProfile');
 var topic_name = 'login_topic';
 var consumer = connection.getConsumer(topic_name);
 var producer = connection.getProducer();
@@ -94,6 +95,8 @@ consumer.on('message',  (message) => {
             case 'profile':
                 handler = getProfile;
                 break;
+            case 'profile_update':
+                handler = updateProfile;
         }
 
         handler.handle_request(data.data, collection, function (err, res) {
