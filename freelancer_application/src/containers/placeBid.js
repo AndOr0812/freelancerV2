@@ -2,13 +2,15 @@ import React,{Component} from 'react';
 import {withRouter,Link} from 'react-router-dom';
 import {connect} from "react-redux";
 import {placeBid} from "../actions";
+import {Field, reduxForm} from 'redux-form';
+
 
 class PlaceBid extends Component{
-    componentWillMount(){
+/*    componentWillMount(){
         if (JSON.stringify(this.props.current_user) !== "{}"){
             this.props.history.push('/profile');
         }
-    }
+    }*/
 
     componentWillReceiveProps(nextProps){
         console.log(`Current Profile Details Next Props Value is ${nextProps.projectdetails}`);
@@ -46,19 +48,19 @@ class PlaceBid extends Component{
             bid_period: values.bid_period,
             bid_status: 'new'
         };
-        this.props.placeBid(bid_values,(result_user)=>{
+        this.props.placeBid(bid_values,(result_bid)=>{
             console.log('return from the callback');
-            console.log(result_user);
+            console.log(result_bid);
             let err_msg="";
             /*if (result_user.error === 'Invalid Email Id'){
                 err_msg = "Email Address doesn't exist.";
             } else if (result_user.error === 'Invalid password'){
                 err_msg = "Please enter the correct Password";
             }*/
-            if(!result_user){
-                err_msg = "Invalid EmailID / Password.";
+            if(!result_bid){
+                err_msg = "Unable to place a bid";
             }else {
-                this.props.history.push('/profile');
+                this.props.history.push(`/projectDetail/${this.props.projectdetails._id}`);
                 return;
             }
             document.getElementById("message").innerHTML = err_msg;
@@ -147,4 +149,8 @@ const mapStateToProps=(state)=>{
         projectdetails: state.projectDetails,
     }
 };
-export default withRouter(connect(mapStateToProps,{placeBid})(PlaceBid));
+export default withRouter(connect(mapStateToProps,{placeBid})(
+    reduxForm({
+        validate,
+        form: 'PlaceBidForm'
+    })(PlaceBid)));
