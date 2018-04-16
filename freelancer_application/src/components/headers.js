@@ -46,6 +46,7 @@ const Headers = () => {
 
             </ul>
             <ul className="navbar-nav">
+                <Link to="/transactions" className="nav-link">Transactions</Link>
                 <Link to="/profile" className="nav-link">Welcome</Link>
                 <Link to="/login" className="nav-link">Login</Link>
                 <Link to="/signup" className="nav-link">Sign Up</Link>
