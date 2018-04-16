@@ -19,6 +19,8 @@ export const ALL_OPEN_PROJECTS = 'all_open_projects';
 
 export const RELEVANT_PROJECTS = 'relevant_projects';
 
+export const PROJECT_DETAIL = 'project_detail';
+
 const ROOT_URL = 'http://localhost:3001';
 
 const api = process.env.REACT_APP_CONTACTS_API_URL || 'http://localhost:3001';
@@ -182,6 +184,32 @@ export function authenticateUser(values,callback) {
             }
         )};
 }
+
+//Action creator to fetch the project details
+
+export function getProjectDetails(projectId,callback) {
+    console.log("Inside the get Project Details action creator");
+
+    const request = axios.get(`${ROOT_URL}/project/${projectId}`,{withCredentials:true});
+
+    return (dispatch) => {
+        request.then(
+            ({data}) => {
+                console.log("Inside the get project details dispatcher function");
+                console.log(data);
+                callback(data);
+                if (data) {
+                    //getUserProfile(data.user.emailid);
+                    console.log(`User returned is ${data}`);
+                    dispatch({
+                        type: PROJECT_DETAIL,
+                        payload: data.projectdetails
+                    });
+                }
+            }
+        )};
+}
+
 
 //Action creator to fetch the list of all open projects
 

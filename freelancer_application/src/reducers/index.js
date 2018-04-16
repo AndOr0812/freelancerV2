@@ -4,6 +4,7 @@ import imageReducer from './imagereducer';
 import profileDetailsReducer from './profiledetailreducer';
 import allOpenProjects from './allOpenProjects';
 import relevantProjects from './relevantProjects';
+import projectDetails from './projectDetailsReducer';
 
 import {reducer as formReducer} from 'redux-form';
 const rootReducer = combineReducers({
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
     profileDetails: profileDetailsReducer,
     images: imageReducer,
     allOpenProjects:allOpenProjects,
+    projectDetails: projectDetails,
     relevantProjects: relevantProjects,
     form : formReducer
 });

@@ -3,7 +3,7 @@ import {withRouter,Link} from 'react-router-dom';
 import Header from '../components/headers';
 import Home from './home';
 import {connect} from "react-redux";
-import {getUserProfile, getAllProjects} from "../actions";
+import {getUserProfile, getAllProjects,getProjectDetails} from "../actions";
 import {reduxForm} from "redux-form";
 
 class AllProjects extends Component{
@@ -18,13 +18,18 @@ class AllProjects extends Component{
         if(this.props.current_user.emailid !== undefined || this.props.current_user.emailid !== null){
             this.props.getAllProjects((res)=>{
                 console.log("Inside the profile view,The current user profile details fetched so far are :");
-                console.log(JSON.stringify(res.projects));
+                console.log(JSON.stringify(res.projectdetails));
             });
         }
     }
 
     handleClick(project_id){
         console.log(`project Id is ${project_id}`);
+        this.props.getProjectDetails(project_id,(results)=> {
+            console.log(`results is ${results}`);
+            /*let path = `/projectDetail/${project_id}`*/
+            this.props.history.push(`/projectDetail/${project_id}`);
+        })
     }
     openProjects = this.props.allOpenProjects.map(function(proj) {
         return (
@@ -70,6 +75,6 @@ const mapStateToProps=(state)=>{
         allOpenProjects: state.allOpenProjects
     }
 };
-export default withRouter(connect(mapStateToProps,{getUserProfile,getAllProjects})(AllProjects));
+export default withRouter(connect(mapStateToProps,{getUserProfile,getAllProjects,getProjectDetails})(AllProjects));
 
 //export default withRouter(AllProjects);
