@@ -147,6 +147,27 @@ app.post('/users/profile/update',function (req,res) {
 
 //Route to fetch all Relevant Open Projects
 
+app.post('/project/placebid',function (req,res) {
+    console.log(`Inside the place a bid project router`);
+    console.log(`req.body is ${req.body}`);
+    kafka.make_request('placeBid',{data:req.body},function (err,results) {
+        if (err){
+            console.log(err);
+            res.status(500).send("Error in kafka connectivity");
+            return;
+        }else {
+            if(results.code == 200){
+                return res.status(201).send(results);
+            }
+            else {
+                return res.status(401).send("error");
+            }
+        }
+    })
+});
+
+//Route to fetch all Relevant Open Projects
+
 app.get('/project/:project_id',function (req,res) {
     console.log(`Inside the relevant projects router ${req.params.project_id}`);
     kafka.make_request('getProjectDetails',{data:{proj_id:req.params.project_id}},function (err,results) {

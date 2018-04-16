@@ -6,6 +6,7 @@ var updateProfile = require('./services/updateProfile');
 var postProject = require('./services/postProject');
 var getAllProjects = require('./services/getAllProjects');
 var getProjectDetails = require('./services/getProjectDetails');
+var placeBid = require('./services/placeBid');
 var topic_name = 'login_topic';
 var consumer = connection.getConsumer(topic_name);
 var producer = connection.getProducer();
@@ -59,6 +60,7 @@ consumer.on('message', function (message) {
 consumer.addTopics([{topic:'profile'/*, offset: 0*/},
     {topic:'profile_update'/*, offset: 0*/},
     {topic:'postProject'/*, offset: 0*/},
+    {topic:'placeBid'/*, offset: 0*/},
     {topic:'getProjects'/*, offset: 0*/},
     {topic:'getProjectDetails'/*, offset: 0*/},
     {topic:'anyRequest'/*, offset: 0*/}], function (err, added) {
@@ -119,6 +121,10 @@ consumer.on('message',  (message) => {
                 break;
             case 'getProjectDetails':
                 handler = getProjectDetails;
+                collection = postProjectCollection;
+                break;
+            case 'placeBid':
+                handler = placeBid;
                 collection = postProjectCollection;
         }
 

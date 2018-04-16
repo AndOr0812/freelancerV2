@@ -21,7 +21,8 @@ class ProjectDetail extends Component{
 
     handleBidClick = (event)=>{
         console.log("Handle the Bid click event inside the handleBidClick function");
-    }
+        this.props.history.push("/placeBid");
+    };
 
 /*    componentDidMount(){
         if(this.props.current_user.emailid !== undefined || this.props.current_user.emailid !== null){
@@ -48,7 +49,7 @@ class ProjectDetail extends Component{
                 </div>
             </div>
             <div className="row">
-                <div className="col-sm-9">
+                <div className="col-sm-6">
                     <div className="row">
                         <div className="col-sm-12">
                             <div className="col-sm-6 mt-4">
@@ -84,7 +85,7 @@ class ProjectDetail extends Component{
                         </div>
                     </div>
                 </div>
-                <div className="col-sm-3 mt-4">
+                <div className="col-sm-6 mt-4">
                     <div className="row">
                             <div className="col-sm-6 mt-4">
                                 <h4>No of Bids:</h4>

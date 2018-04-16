@@ -211,6 +211,32 @@ export function getProjectDetails(projectId,callback) {
 }
 
 
+//Action creator to place a bid for the project
+
+export function placeBid(bidValues,callback) {
+    console.log("Inside the place a bid action creator");
+    console.log(`bid Values is ${bidValues}`);
+    const request = axios.post(`${ROOT_URL}/project/placebid`,bidValues,{withCredentials:true});
+
+    return (dispatch) => {
+        request.then(
+            ({data}) => {
+                console.log("Inside the place a bid dispatcher function");
+                console.log(data);
+                callback(data);
+                if (data) {
+                    //getUserProfile(data.user.emailid);
+                    console.log(`User returned is ${data}`);
+                    dispatch({
+                        type: PROJECT_DETAIL,
+                        payload: data.projectdetails
+                    });
+                }
+            }
+        )};
+}
+
+
 //Action creator to fetch the list of all open projects
 
 export function getAllProjects(callback) {

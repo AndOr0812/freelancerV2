@@ -19,6 +19,7 @@ import PostProject from "./containers/postproject";
 import AllProjects from "./containers/allProjects";
 import RelevantProjects from "./containers/relevantProjects";
 import ProjectDetail from "./containers/projectDetail";
+import PlaceBid from "./containers/placeBid";
 
 const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
 
@@ -35,6 +36,7 @@ ReactDOM.render(
               <Route path="/allProjects" component={AllProjects}/>
               <Route path="/relevantProjects" component={RelevantProjects}/>
               <Route path="/projectDetail/:id" component={ProjectDetail}/>
+              <Route path="/placeBid" component={PlaceBid}/>
               <Route path="/logout" component={LogOut}/>
               <Route path="/signup" component={SignUp}/>
               <Route path="/login" component={Login}/>
