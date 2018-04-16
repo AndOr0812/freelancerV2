@@ -15,7 +15,7 @@ var producer = connection.getProducer();
 
 // Add MongoDB connections
 const MongoClient = require('mongodb').MongoClient;
-var mongoURL = 'mongodb://localhost:54000/freelancer';
+var mongoURL = 'mongodb://localhost:27017/freelancer';
 
 var collection,freelancerCollection,postProjectCollection;
 

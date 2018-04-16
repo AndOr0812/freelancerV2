@@ -14,7 +14,7 @@ var glob = require('glob');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var mongoSessionURL = "mongodb://localhost:54000/sessions";
+var mongoSessionURL = "mongodb://localhost:27017/sessions";
 var expressSessions = require("express-session");
 var mongoStore = require("connect-mongo/es5")(expressSessions);
 var kafka = require('./routes/kafka/client');
